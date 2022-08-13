@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: yopass
+  name: yopass
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yopass
+  template:
+    metadata:
+      labels:
+        app: yopass
+    spec:
+      containers:
+        - image: jhaals/yopass
+          name: yopass
+          args:
+            - --memcached=localhost:11211
+          ports:
+            - containerPort: 1337
+              name: http
+              protocol: TCP
+        - name: yopass-memcached
+          image: memcached
+          args:
+            - -m 64
+          ports:
+            - containerPort: 11211
+              name: memcached
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: yopass
+  name: yopass
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 1337
+  selector:
+    app: yopass
+  type: NodePort

@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: send
+  labels:
+    app: send
+spec:
+  selector:
+    matchLabels:
+      app: send
+  template:
+    metadata:
+      labels:
+        app: send
+    spec:
+      containers:
+        - name: send
+          image: registry.gitlab.com/timvisee/send:v3.4.18
+          ports:
+            - containerPort: 1443
+          env:
+            - name: BASE_URL
+              value: https://<domainname.com>
+            - name: REDIS_HOST
+              value: localhost
+            - name: EXPIRE_TIMES_SECONDS
+              value: "604800"
+        - name: redis
+          image: redis
+          ports:
+            - containerPort: 6379
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: REDIS_HOST
+              value: localhost
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: send
+  labels:
+    app: send
+spec:
+  type: NodePort
+  selector:
+    app: send
+  ports:
+    - port: 80
+      targetPort: 1443

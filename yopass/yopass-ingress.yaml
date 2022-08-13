@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: yopass
+  namespace: "default"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: public
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/tags:  Cluster=<eks_cluster_name>,Environment=<env>,Created-by=k8s,Name=alb-ingress-public
+    alb.ingress.kubernetes.io/subnets: <Public VPC Subnets>
+    alb.ingress.kubernetes.io/security-groups: <HTTP/HTTPS SG and Default SG>
+    alb.ingress.kubernetes.io/certificate-arn: 	<ACM ARN>
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/success-codes: 200,403,404
+    # Use kube-proxy health check
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    alb.ingress.kubernetes.io/healthcheck-port: "10256"
+  labels:
+    app:  yopass
+spec:
+  rules:
+    - host: secrets.salucro-qa.net
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: "yopass"
+              servicePort: 80
+ 

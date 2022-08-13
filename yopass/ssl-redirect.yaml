@@ -1,0 +1,26 @@
+# Public facing but locked down sg
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: redirect
+  namespace: "default"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/group.name: public
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/subnets: <Public VPC Subnets>
+    alb.ingress.kubernetes.io/security-groups: <HTTP/HTTPS SG and Default SG>
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+    alb.ingress.kubernetes.io/success-codes: 200,403,404
+    alb.ingress.kubernetes.io/healthcheck-path: /ping
+  labels:
+    app: redirect
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: ssl-redirect
+              servicePort: use-annotation
