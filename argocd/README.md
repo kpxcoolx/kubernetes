@@ -1,5 +1,5 @@
 ## Installation Guide for ArgoCD
-Install argocd.yaml changing the values for the ingress section 
+Install argocd.yaml changing the values for the ingress section at the bottom of the yaml
 
 ```apiVersion: extensions/v1beta1
 kind: Ingress
