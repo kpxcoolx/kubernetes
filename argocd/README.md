@@ -1,4 +1,4 @@
-## Installation Guide for ArgoCD
+## Installation Guide for ArgoCD in AWS EKS cluster using ALB
 Install argocd.yaml changing the values for the ingress section at the bottom of the yaml
 
 ```apiVersion: extensions/v1beta1
